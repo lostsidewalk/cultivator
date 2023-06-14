@@ -1,12 +1,16 @@
 package com.lostsidewalk.growmate;
 
+import java.io.Serializable;
+
 /**
  * This file is part of the GrowMate project.
  * (c) [2023] [Lost Sidewalk Software LLC]
  *
  * SPDX-License-Identifier: MIT
  */
-public class SensorDefinition {
+public class SensorDefinition implements Serializable {
+
+    public static final long serialVersionUID = 298230498209834L;
 
     private String name;
     private String type;

@@ -5,6 +5,7 @@ import com.lostsidewalk.growmate.sensors.*;
 import com.pi4j.io.gpio.*;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
@@ -86,6 +87,7 @@ public class MonitorService {
     }
 
     List<Sensor<?>> sensors;
+    Map<String, Actuator> actuators;
 
     /**
      * Initializes the MonitorService after construction.
@@ -95,7 +97,7 @@ public class MonitorService {
         sensors = buildSensors();
         log.info("GrowMate sensors={}", sensors);
 
-        Map<String, Actuator> actuators = buildActuators(gpioController);
+        actuators = buildActuators(gpioController);
         log.info("GrowMate actuators={}", actuators);
 
         log.info("Starting GrowMate reactor...");
@@ -155,13 +157,26 @@ public class MonitorService {
      *
      * @return the map of sensor names to their current values
      */
-    Map<String, Object> getSensorState() {
+    public Map<String, Object> getSensorState() {
         return sensors.stream().collect(
                 toMap(
                         Sensor::getName,
                         Sensor::currentValue
                 )
         );
+    }
+
+    /**
+     * Returns the current value of any sensor given by name.
+     *
+     * @param name the name of the sensor to query
+     * @return the current value of the named sensor
+     */
+    public Object getSensorValue(String name) {
+        return sensors.stream().filter(s -> StringUtils.equals(s.getName(), name))
+                .findFirst()
+                .map(Sensor::currentValue)
+                .orElse(null);
     }
 
     /**
@@ -185,5 +200,17 @@ public class MonitorService {
             return actuators.stream().collect(toMap(Actuator::getName, a -> a));
         }
         return emptyMap();
+    }
+
+    /**
+     * Toggles the state of the specified actuator.
+     *
+     * @param name the name of the actuator
+     */
+    public void toggleActuator(String name) {
+        Actuator actuator = this.actuators.get(name);
+        if (actuator != null) {
+            actuator.toggleState();
+        }
     }
 }

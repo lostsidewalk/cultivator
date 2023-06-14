@@ -5,6 +5,7 @@ import com.pi4j.io.gpio.PinState;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.pi4j.io.gpio.PinState.HIGH;
 import static com.pi4j.io.gpio.PinState.LOW;
@@ -26,14 +27,16 @@ public class Actuator {
     private final String name;
     private final GpioPinDigitalOutput outputPin;
     private final long timeout;
+    private final AtomicBoolean currentState = new AtomicBoolean(false);
 
     /**
      * Constructs an Actuator with the given name and output pin.
      *
      * @param name       the name of the actuator
      * @param outputPin  the GPIO output pin associated with the actuator
+     * @param timeout    the number of milliseconds to wait for the actuator write to complete
      */
-    Actuator(String name, GpioPinDigitalOutput outputPin, Long timeout) {
+    public Actuator(String name, GpioPinDigitalOutput outputPin, Long timeout) {
         this.name = name;
         this.outputPin = outputPin;
         this.timeout = (timeout == null || timeout < 0) ? DEFAULT_ACTUATOR_WRITE_TIMEOUT : timeout;
@@ -47,16 +50,17 @@ public class Actuator {
     @SuppressWarnings("unused")
     public void setState(boolean state) {
         // Set the state of the actuator pin based on the provided boolean value
-        setStateWithTimeout(outputPin, state ? HIGH : LOW, timeout);
+        setStateWithTimeout(outputPin, state ? HIGH : LOW, timeout, currentState);
     }
 
-    private static void setStateWithTimeout(GpioPinDigitalOutput pin, PinState pinState, @SuppressWarnings("SameParameterValue") long timeout) {
+    private static void setStateWithTimeout(GpioPinDigitalOutput pin, PinState pinState, @SuppressWarnings("SameParameterValue") long timeout, AtomicBoolean currentState) {
         // Create an ExecutorService
         ExecutorService executor = Executors.newSingleThreadExecutor();
 
         // Submit the task to set the state
         Future<Void> future = executor.submit(() -> {
             pin.setState(pinState);
+            currentState.set(pinState.isHigh());
             return null;
         });
 
@@ -73,6 +77,7 @@ public class Actuator {
             executor.shutdown();
         }
     }
+
     /**
      * Returns the name of the actuator.
      *
@@ -83,11 +88,19 @@ public class Actuator {
     }
 
     /**
-     * Creates and returns an Actuator with the given name and output pin.
+     * Toggles the state of the actuator.
+     */
+    public void toggleState() {
+        // sorry
+        setStateWithTimeout(outputPin, PinState.getState(!this.currentState.get()), timeout, this.currentState);
+    }
+
+    /**
+     * Creates and returns an Actuator with the given name, output pin, and timeout.
      *
      * @param name       the name of the actuator
      * @param outputPin  the GPIO output pin associated with the actuator
-     * @param timeout    the number of ms to wait for the actuator write to complete
+     * @param timeout    the number of milliseconds to wait for the actuator write to complete
      * @return an Actuator instance
      */
     public static Actuator from(String name, GpioPinDigitalOutput outputPin, Long timeout) {
