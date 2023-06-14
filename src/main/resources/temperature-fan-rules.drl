@@ -1,0 +1,16 @@
+
+rule "plant temp GT 25 deg -> fan1 (on)"
+when
+    $sensorState: Map((this["plant1_temp"] > 25.0) || (this["plant2_temp"] > 25.0) || (this["plant3_temp"] > 25.0))
+then
+    Actuator fan1 = $actuators.get("fan1");
+    fan1.setState(true);
+end
+
+rule "plant temp LE 25 deg -> fan1 (off)"
+when
+    $sensorState: Map((this["plant1_temp"] <= 25.0) && (this["plant2_temp"] <= 25.0) && (this["plant3_temp"] <= 25.0))
+then
+    Actuator fan1 = $actuators.get("fan1");
+    fan1.setState(false);
+end
