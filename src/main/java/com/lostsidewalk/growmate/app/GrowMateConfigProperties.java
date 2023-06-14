@@ -3,6 +3,7 @@ package com.lostsidewalk.growmate.app;
 import com.lostsidewalk.growmate.ActuatorDefinition;
 import com.lostsidewalk.growmate.SensorDefinition;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
@@ -14,6 +15,7 @@ import java.util.List;
  *
  * SPDX-License-Identifier: MIT
  */
+@Component
 @ConfigurationProperties(prefix = "com.lostsidewalk.growmate")
 public class GrowMateConfigProperties {
 

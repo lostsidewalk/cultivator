@@ -19,7 +19,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableAutoConfiguration
 @EnableScheduling
 @EnableConfigurationProperties
-@ComponentScan({"com.lostsidewalk.growmate"})
+@ComponentScan({"com.lostsidewalk.growmate", "com.lostsidewalk.growmate.app"})
 public class Application {
 
     /**
@@ -28,6 +28,7 @@ public class Application {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
+        System.setProperty("pi4j.library.path", "system");
         SpringApplication.run(Application.class, args);
     }
 }

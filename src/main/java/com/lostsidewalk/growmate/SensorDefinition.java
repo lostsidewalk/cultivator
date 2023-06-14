@@ -42,6 +42,11 @@ public class SensorDefinition {
     }
 
     /**
+     * Creates a sensor definition object with no property values.
+     */
+    public SensorDefinition() {}
+
+    /**
      * Returns the name of the sensor.
      *
      * @return the name of the sensor

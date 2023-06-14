@@ -93,8 +93,12 @@ public class MonitorService {
     @PostConstruct
     public void postConstruct() {
         sensors = buildSensors();
-        Map<String, Actuator> actuators = buildActuators(gpioController);
+        log.info("GrowMate sensors={}", sensors);
 
+        Map<String, Actuator> actuators = buildActuators(gpioController);
+        log.info("GrowMate actuators={}", actuators);
+
+        log.info("Starting GrowMate reactor...");
         Flux.interval(ofSeconds(1L))
                 .map(tick -> getSensorState())
                 .subscribe(sensorState -> rulesEngine.evaluateRules(sensorState, actuators));

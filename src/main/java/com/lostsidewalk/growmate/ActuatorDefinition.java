@@ -37,6 +37,11 @@ public class ActuatorDefinition {
     }
 
     /**
+     * Creates an ActuatorDefinition object with no property values.
+     */
+    public ActuatorDefinition() {}
+
+    /**
      * Returns the name of the actuator.
      *
      * @return the name of the actuator
