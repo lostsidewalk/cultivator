@@ -113,7 +113,7 @@ o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomc
 o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
 w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 823 ms
 o.k.m.i.embedder.MavenSettings           : Environment variable M2_HOME is not set
-c.l.cultivator.MonitorService            : Cultivator sensors=[[name=plant1_temp,timeout=500, [name=plant2_temp,timeout=500, [name=plant3_temp,timeout=500]
+c.l.cultivator.MonitorService            : Cultivator sensors=[[name=plant1_temp,timeout=500], [name=plant2_temp,timeout=500], [name=plant3_temp,timeout=500]]
 c.l.cultivator.MonitorService            : Cultivator actuators={fan1=[name=fan1,timeout=500]}
 c.l.cultivator.MonitorService            : Starting Cultivator reactor...
 o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8080 (http) with context path ''

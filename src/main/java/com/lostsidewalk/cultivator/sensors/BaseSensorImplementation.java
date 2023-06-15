@@ -114,6 +114,6 @@ abstract class BaseSensorImplementation<T> implements Sensor<T> {
 
     @Override
     public String toString() {
-        return String.format("[name=%s,timeout=%d", name, timeout);
+        return String.format("[name=%s,timeout=%d]", name, timeout);
     }
 }
