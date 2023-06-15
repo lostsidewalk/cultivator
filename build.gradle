@@ -32,8 +32,8 @@ dependencies {
     // https://mvnrepository.com/artifact/com.pi4j/pi4j-core
     //noinspection GradlePackageUpdate
     implementation 'com.pi4j:pi4j-core:1.4' // do not upgrade
-    // https://mvnrepository.com/artifact/org.kie/kie-api
-    implementation 'org.kie:kie-api:8.39.0.Final'
+    // https://mvnrepository.com/artifact/org.kie/kie-ci
+    implementation 'org.kie:kie-ci:8.39.0.Final'
     // https://mvnrepository.com/artifact/org.drools/drools-core
     implementation 'org.drools:drools-core:8.39.0.Final'
     // https://mvnrepository.com/artifact/org.drools/drools-compiler
@@ -42,7 +42,6 @@ dependencies {
     implementation 'org.apache.commons:commons-lang3:3.12.0'
     // https://mvnrepository.com/artifact/org.apache.commons/commons-collections4
     implementation 'org.apache.commons:commons-collections4:4.4'
-
     // This dependency is used internally, and not exposed to consumers on their own compile classpath.
     implementation 'com.google.guava:guava:31.1-jre'
 

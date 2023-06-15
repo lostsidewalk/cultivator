@@ -6,6 +6,8 @@ import com.pi4j.io.gpio.PinState;
 import java.math.BigDecimal;
 
 /**
+ * Implementation class for a relative humidity sensor.
+ *
  * This file is part of the GrowMate project.
  * (c) [2023] [Lost Sidewalk Software LLC]
  *

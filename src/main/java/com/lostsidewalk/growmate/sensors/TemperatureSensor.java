@@ -6,7 +6,7 @@ import com.pi4j.io.gpio.PinState;
 import java.math.BigDecimal;
 
 /**
- * Represents a temperature sensor for measuring the temperature.
+ * Represents a sensor for measuring the temperature.
  *
  * This file is part of the GrowMate project.
  * (c) [2023] [Lost Sidewalk Software LLC]

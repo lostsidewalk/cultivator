@@ -4,6 +4,8 @@ import com.pi4j.io.gpio.GpioPinDigitalInput;
 import com.pi4j.io.gpio.PinState;
 
 /**
+ * Implementation class for a light sensor.
+ *
  * This file is part of the GrowMate project.
  * (c) [2023] [Lost Sidewalk Software LLC]
  *

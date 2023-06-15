@@ -2,6 +2,8 @@ package com.lostsidewalk.growmate;
 
 import java.io.Serializable;
 
+import static org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString;
+
 /**
  * This file is part of the GrowMate project.
  * (c) [2023] [Lost Sidewalk Software LLC]
@@ -120,5 +122,10 @@ public class SensorDefinition implements Serializable {
      */
     public void setTimeout(Long timeout) {
         this.timeout = timeout;
+    }
+
+    @Override
+    public String toString() {
+        return reflectionToString(this);
     }
 }

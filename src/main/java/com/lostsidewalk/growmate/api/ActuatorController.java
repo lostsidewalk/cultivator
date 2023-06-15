@@ -43,14 +43,26 @@ public class ActuatorController {
     }
 
     /**
-     * Toggles the state of the specified actuator.
+     * Enables the specified actuator.
      *
      * @param name the name of the actuator
      * @return ResponseEntity indicating the success of the operation
      */
-    @PutMapping("/actuators/{name}")
-    public ResponseEntity<?> updateActuator(@PathVariable String name) {
-        monitorService.toggleActuator(name);
+    @PutMapping("/actuators/{name}/enable")
+    public ResponseEntity<?> enableActuator(@PathVariable String name) {
+        monitorService.enableActuator(name);
+        return ok().build();
+    }
+
+    /**
+     * Enables the specified actuator.
+     *
+     * @param name the name of the actuator
+     * @return ResponseEntity indicating the success of the operation
+     */
+    @PutMapping("/actuators/{name}/disable")
+    public ResponseEntity<?> disableActuator(@PathVariable String name) {
+        monitorService.disableActuator(name);
         return ok().build();
     }
 }

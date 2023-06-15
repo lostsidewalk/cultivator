@@ -6,7 +6,7 @@ import com.pi4j.io.gpio.PinState;
 import java.math.BigDecimal;
 
 /**
- * Represents a soil moisture sensor for measuring the moisture level in the soil.
+ * Represents a sensor for measuring the moisture level in the soil.
  *
  * This file is part of the GrowMate project.
  * (c) [2023] [Lost Sidewalk Software LLC]

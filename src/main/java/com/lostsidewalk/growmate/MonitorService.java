@@ -1,5 +1,6 @@
 package com.lostsidewalk.growmate;
 
+import com.lostsidewalk.growmate.app.GpioAdapter;
 import com.lostsidewalk.growmate.app.GrowMateConfigProperties;
 import com.lostsidewalk.growmate.sensors.*;
 import com.pi4j.io.gpio.*;
@@ -12,6 +13,7 @@ import reactor.core.publisher.Flux;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -46,7 +48,7 @@ public class MonitorService {
     RulesEngine rulesEngine;
 
     @Autowired
-    GpioController gpioController;
+    GpioAdapter gpioAdapter;
 
     /**
      * Represents the types of sensors available.
@@ -97,11 +99,11 @@ public class MonitorService {
         sensors = buildSensors();
         log.info("GrowMate sensors={}", sensors);
 
-        actuators = buildActuators(gpioController);
+        actuators = buildActuators(gpioAdapter);
         log.info("GrowMate actuators={}", actuators);
 
         log.info("Starting GrowMate reactor...");
-        Flux.interval(ofSeconds(1L))
+        Flux.interval(ofSeconds(2L))
                 .map(tick -> getSensorState())
                 .subscribe(sensorState -> rulesEngine.evaluateRules(sensorState, actuators));
     }
@@ -143,7 +145,7 @@ public class MonitorService {
     Sensor<?> createSensor(SensorType sensorType, String name, Integer pinAddress, Long timeout) {
         try {
             Constructor<? extends Sensor<?>> ctor = sensorType.clazz.getConstructor(String.class, GpioPinDigitalInput.class, Long.class);
-            GpioPinDigitalInput inputPin = gpioController.provisionDigitalInputPin(getPinByAddress(pinAddress), PULL_DOWN);
+            GpioPinDigitalInput inputPin = gpioAdapter.provisionDigitalInputPin(getPinByAddress(pinAddress), PULL_DOWN);
             return ctor.newInstance(name, inputPin, timeout);
         } catch (NoSuchMethodException | InvocationTargetException | InstantiationException |
                  IllegalAccessException e) {
@@ -158,12 +160,12 @@ public class MonitorService {
      * @return the map of sensor names to their current values
      */
     public Map<String, Object> getSensorState() {
-        return sensors.stream().collect(
-                toMap(
-                        Sensor::getName,
-                        Sensor::currentValue
-                )
-        );
+        Map<String, Object> m = new HashMap<>();
+        for (Sensor<?> sensor : sensors) {
+            Object currentValue = sensor.currentValue();
+            m.put(sensor.getName(), currentValue);
+        }
+        return m;
     }
 
     /**
@@ -182,16 +184,16 @@ public class MonitorService {
     /**
      * Builds the map of actuators based on the configuration properties.
      *
-     * @param gpio the GpioController instance
+     * @param gpioAdapter the GpioController instance
      * @return the map of actuators with their names as keys
      */
-    Map<String, Actuator> buildActuators(GpioController gpio) {
+    Map<String, Actuator> buildActuators(GpioAdapter gpioAdapter) {
         List<ActuatorDefinition> actuatorDefinitions = configProperties.getActuatorDefinitions();
         if (isNotEmpty(actuatorDefinitions)) {
             List<Actuator> actuators = newArrayListWithExpectedSize(size(actuatorDefinitions));
             for (ActuatorDefinition actuatorDefinition : actuatorDefinitions) {
                 try {
-                    GpioPinDigitalOutput outputPin = gpio.provisionDigitalOutputPin(getPinByAddress(actuatorDefinition.getPinAddress()), LOW);
+                    GpioPinDigitalOutput outputPin = gpioAdapter.provisionDigitalOutputPin(getPinByAddress(actuatorDefinition.getPinAddress()), LOW);
                     actuators.add(Actuator.from(actuatorDefinition.getName(), outputPin, actuatorDefinition.getTimeout()));
                 } catch (Exception e) {
                     log.error("Unable to provision digital output pin due to: {}", e.getMessage());
@@ -203,14 +205,26 @@ public class MonitorService {
     }
 
     /**
-     * Toggles the state of the specified actuator.
+     * Enables the specified actuator.
      *
      * @param name the name of the actuator
      */
-    public void toggleActuator(String name) {
+    public void enableActuator(String name) {
         Actuator actuator = this.actuators.get(name);
         if (actuator != null) {
-            actuator.toggleState();
+            actuator.setState(true);
+        }
+    }
+
+    /**
+     * Disables the specified actuator.
+     *
+     * @param name the name of the actuator
+     */
+    public void disableActuator(String name) {
+        Actuator actuator = this.actuators.get(name);
+        if (actuator != null) {
+            actuator.setState(false);
         }
     }
 }

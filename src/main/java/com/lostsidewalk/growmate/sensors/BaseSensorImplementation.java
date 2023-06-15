@@ -5,10 +5,14 @@ import com.pi4j.io.gpio.GpioPinDigitalInput;
 import com.pi4j.io.gpio.PinState;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.concurrent.*;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeoutException;
 
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static org.apache.commons.lang3.StringUtils.defaultString;
 
 /**
  * Base implementation class for sensors.
@@ -63,7 +67,9 @@ abstract class BaseSensorImplementation<T> implements Sensor<T> {
 
             return value;
         } catch (Exception e) {
-            log.error("Unable to get input pin state due to: {}", e.getMessage());
+            log.error("Unable to get sensor state due to: {}, sensor={}, timeout={}",
+                    defaultString(e.getMessage(), "No I/O pin on this device"),
+                    name, timeout);
         }
 
         return null;

@@ -6,7 +6,7 @@ import com.pi4j.io.gpio.PinState;
 import java.math.BigDecimal;
 
 /**
- * Represents a pH sensor for measuring the pH level in a reservoir.
+ * Represents a sensor for measuring the pH level in a reservoir.
  *
  * This file is part of the GrowMate project.
  * (c) [2023] [Lost Sidewalk Software LLC]

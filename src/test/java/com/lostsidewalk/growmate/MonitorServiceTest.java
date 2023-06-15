@@ -1,5 +1,6 @@
 package com.lostsidewalk.growmate;
 
+import com.lostsidewalk.growmate.app.GpioAdapter;
 import com.lostsidewalk.growmate.app.GrowMateConfigProperties;
 import com.lostsidewalk.growmate.sensors.*;
 import com.pi4j.io.gpio.*;
@@ -31,7 +32,7 @@ class MonitorServiceTest {
     private GrowMateConfigProperties configProperties;
 
     @Mock
-    private GpioController gpioController;
+    private GpioAdapter gpioAdapter;
 
     @InjectMocks
     private MonitorService monitorService;
@@ -53,7 +54,7 @@ class MonitorServiceTest {
         sensorDefinitions.add(new SensorDefinition("Temperature Sensor", TEMPERATURE.name, 22));
 
         when(configProperties.getSensorDefinitions()).thenReturn(sensorDefinitions);
-        when(gpioController.provisionDigitalInputPin(any(Pin.class), any(PinPullResistance.class))).thenReturn(mock(GpioPinDigitalInput.class));
+        when(gpioAdapter.provisionDigitalInputPin(any(Pin.class), any(PinPullResistance.class))).thenReturn(mock(GpioPinDigitalInput.class));
 
         monitorService.postConstruct();
 
@@ -88,11 +89,11 @@ class MonitorServiceTest {
         actuatorDefinitions.add(new ActuatorDefinition("Actuator 1", 18));
 
         when(configProperties.getActuatorDefinitions()).thenReturn(actuatorDefinitions);
-        when(gpioController.provisionDigitalOutputPin(any(Pin.class), any(PinState.class))).thenReturn(mock(GpioPinDigitalOutput.class));
+        when(gpioAdapter.provisionDigitalOutputPin(any(Pin.class), any(PinState.class))).thenReturn(mock(GpioPinDigitalOutput.class));
 
         monitorService.postConstruct();
 
-        Map<String, Actuator> actuators = monitorService.buildActuators(gpioController);
+        Map<String, Actuator> actuators = monitorService.buildActuators(gpioAdapter);
         assertEquals(1, actuators.size());
         assertNotNull(actuators.get("Actuator 1"));
     }

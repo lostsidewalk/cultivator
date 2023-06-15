@@ -1,9 +1,9 @@
 package com.lostsidewalk.growmate.app;
 
-import com.pi4j.io.gpio.GpioController;
 import com.pi4j.io.gpio.GpioFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 
 /**
  * Configuration class for GPIO related beans.
@@ -21,8 +21,14 @@ public class GpioConfig {
      *
      * @return an instance of GpioController
      */
+    @Profile("micro")
     @Bean
-    public GpioController gpioController() {
-        return GpioFactory.getInstance();
+    public GpioAdapter deviceGpioController() {
+        return new GpioAdapter(GpioFactory.getInstance());
+    }
+
+    @Bean
+    public GpioAdapter defaultGpioController() {
+        return new GpioAdapter();
     }
 }

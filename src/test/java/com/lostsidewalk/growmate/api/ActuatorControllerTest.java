@@ -6,7 +6,6 @@ import com.lostsidewalk.growmate.app.GrowMateConfigProperties;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.util.Collections;
@@ -15,6 +14,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.openMocks;
+import static org.springframework.http.HttpStatus.OK;
 
 class ActuatorControllerTest {
 
@@ -44,7 +44,7 @@ class ActuatorControllerTest {
 
         ResponseEntity<List<ActuatorDefinition>> response = actuatorController.getActuatorDefinitions();
 
-        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(OK, response.getStatusCode());
         assertEquals(expectedDefinitions, response.getBody());
 
         verify(configProperties, times(1)).getActuatorDefinitions();
@@ -52,14 +52,26 @@ class ActuatorControllerTest {
     }
 
     @Test
-    void updateActuator() {
+    void enableActuator() {
         String actuatorName = "actuator1";
 
-        ResponseEntity<?> response = actuatorController.updateActuator(actuatorName);
+        ResponseEntity<?> response = actuatorController.enableActuator(actuatorName);
 
-        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(OK, response.getStatusCode());
 
-        verify(monitorService, times(1)).toggleActuator(actuatorName);
+        verify(monitorService, times(1)).enableActuator(actuatorName);
+        verifyNoMoreInteractions(monitorService);
+    }
+
+    @Test
+    void disableActuator() {
+        String actuatorName = "actuator1";
+
+        ResponseEntity<?> response = actuatorController.disableActuator(actuatorName);
+
+        assertEquals(OK, response.getStatusCode());
+
+        verify(monitorService, times(1)).disableActuator(actuatorName);
         verifyNoMoreInteractions(monitorService);
     }
 }
