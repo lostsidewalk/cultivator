@@ -24,12 +24,11 @@ These instructions will guide you on how to set up and run the Cultivator projec
 
 1. Clone the repository to your Raspberry Pi:
 
-git clone https://github.com/lostsidewalk/cultivator.git
+`git clone https://github.com/lostsidewalk/cultivator.git`
 
 2. Build the project using a build tool of your choice (e.g., Maven):
 
-cd cultivator
-mvn clean install
+`cd cultivator && mvn clean install`
 
 ### Usage
 
@@ -37,7 +36,7 @@ mvn clean install
 
 2. Run the application:
 
-java -jar cultivator.jar
+`java -jar cultivator.jar`
 
 3. The application should now be running on `http://localhost:8080`.
 
