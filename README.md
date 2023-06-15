@@ -33,18 +33,95 @@ These instructions will guide you on how to set up and run the Cultivator projec
 ### Usage
 
 1. Configure the sensor and actuator definitions in the `application.properties` file or through environment variables.
+```
+#
+# plant 1 temp sensor
+#
+com.lostsidewalk.cultivator.sensor-definitions[0].name=plant1_temp
+com.lostsidewalk.cultivator.sensor-definitions[0].type=temp
+com.lostsidewalk.cultivator.sensor-definitions[0].pinAddress=11
+#
+# plant 2 temp sensor
+#
+com.lostsidewalk.cultivator.sensor-definitions[1].name=plant2_temp
+com.lostsidewalk.cultivator.sensor-definitions[1].type=temp
+com.lostsidewalk.cultivator.sensor-definitions[1].pinAddress=12
+#
+# plant 3 temp sensor
+#
+com.lostsidewalk.cultivator.sensor-definitions[2].name=plant3_temp
+com.lostsidewalk.cultivator.sensor-definitions[2].type=temp
+com.lostsidewalk.cultivator.sensor-definitions[2].pinAddress=13
+#
+# fan actuator
+#
+com.lostsidewalk.cultivator.actuator-definitions[0].name=fan1
+com.lostsidewalk.cultivator.actuator-definitions[0].pinAddress=14
+```
 
-2. Run the application:
+2. Setup rules:
+
+You can customize the behavior of the Cultivator application by modifying the rules defined in the rules directory. These rules dictate how the sensor data is evaluated and what actions are triggered on the actuators. Feel free to adapt the rules to suit your specific use case.
+
+```
+package com.lostsidewalk.cultivator
+
+declare defaultKieSession
+end
+
+declare Map
+    @typesafe(false)
+end
+
+declare Actuator
+    @typesafe(false)
+end
+
+rule "plant temp GT 25 deg -> fan1 (on)"
+when
+    $sensorState: Map((this["plant1_temp"] > 25.0) || (this["plant2_temp"] > 25.0) || (this["plant3_temp"] > 25.0))
+    $actuator: Actuator(name == "fan1") from $actuators.values()
+then
+    $actuator.setState(true);
+end
+
+rule "plant temp LE 25 deg -> fan1 (off)"
+when
+    $sensorState: Map((this["plant1_temp"] <= 25.0) && (this["plant2_temp"] <= 25.0) && (this["plant3_temp"] <= 25.0))
+    $actuator: Actuator(name == "fan1") from $actuators.values()
+then
+    $actuator.setState(true);
+end
+```
+
+3. Run the application:
 
 `java -jar cultivator.jar`
 
-3. The application should now be running on `http://localhost:8080`.
+4. The application should now be running on `http://localhost:8080`.
 
-4. Monitor the logs to observe sensor readings and rule evaluations.
+The Cultivator application provides a RESTful API for interacting with sensors and actuators.
+
+5. Monitor the logs to observe sensor readings and rule evaluations.
+
+```
+c.l.cultivator.app.Application           : Starting Application using Java 17.0.3 with PID 244250 (/world/src/coldchillinsw/cultivator/build/classes/java/main started by me in /world/src/coldchillinsw/cultivator)
+c.l.cultivator.app.Application           : No active profile set, falling back to 1 default profile: "default"
+o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 8080 (http)
+o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.8]
+o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 823 ms
+o.k.m.i.embedder.MavenSettings           : Environment variable M2_HOME is not set
+c.l.cultivator.MonitorService            : Cultivator sensors=[com.lostsidewalk.cultivator.sensors.TemperatureSensor@2cc34cd5, com.lostsidewalk.cultivator.sensors.TemperatureSensor@684b26b7, com.lostsidewalk.cultivator.sensors.TemperatureSensor@2de7c84a]
+c.l.cultivator.MonitorService            : Cultivator actuators={fan1=com.lostsidewalk.cultivator.Actuator@3bf01a01}
+c.l.cultivator.MonitorService            : Starting Cultivator reactor...
+o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8080 (http) with context path ''
+c.l.cultivator.app.Application           : Started Application in 3.221 seconds (process running for 3.504)
+```
 
 ## REST API
 
-The Cultivator application provides a RESTful API for interacting with sensors and actuators.
 
 ### Sensors
 
@@ -74,9 +151,6 @@ Disable Actuator
   - `actuatorName` - The name ID of the actuator to disable.
 - Response:
   - Status Code: 200 (OK)
-
-## Customization
-You can customize the behavior of the Cultivator application by modifying the rules defined in the rules directory. These rules dictate how the sensor data is evaluated and what actions are triggered on the actuators. Feel free to adapt the rules to suit your specific use case.
 
 ## Contributing
 Contributions are welcome! If you find any issues or would like to suggest enhancements, please open an issue or submit a pull request.
