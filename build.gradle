@@ -53,7 +53,7 @@ dependencies {
 }
 
 springBoot {
-    mainClassName = 'com.lostsidewalk.growmate.app.Application'
+    mainClassName = 'com.lostsidewalk.cultivator.app.Application'
 }
 
 test {

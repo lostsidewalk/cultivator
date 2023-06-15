@@ -1,6 +1,6 @@
-# GrowMate
+# Cultivator
 
-GrowMate is a smart gardening system that enables monitoring and control of various environmental factors in a garden. It uses sensors to gather data and actuators to perform actions based on predefined rules. It leverages the Drools rule engine to enable flexible and customizable automation in various domains.
+Cultivator is a smart gardening system that enables monitoring and control of various environmental factors in a garden. It uses sensors to gather data and actuators to perform actions based on predefined rules. It leverages the Drools rule engine to enable flexible and customizable automation in various domains.
 
 ## Features
 
@@ -13,7 +13,7 @@ GrowMate is a smart gardening system that enables monitoring and control of vari
 
 ## Getting Started
 
-These instructions will guide you on how to set up and run the GrowMate project on your Raspberry Pi.
+These instructions will guide you on how to set up and run the Cultivator project on your Raspberry Pi.
 
 ### Prerequisites
 
@@ -26,11 +26,11 @@ These instructions will guide you on how to set up and run the GrowMate project 
 
 1. Clone the repository to your Raspberry Pi:
 
-git clone https://github.com/your-username/growmate.git
+git clone https://github.com/lostsidewalk/cultivator.git
 
 2. Build the project using a build tool of your choice (e.g., Maven):
 
-cd growmate
+cd cultivator
 mvn clean install
 
 ### Usage
@@ -39,7 +39,7 @@ mvn clean install
 
 2. Run the application:
 
-java -jar growmate.jar
+java -jar cultivator.jar
 
 3. The application should now be running on `http://localhost:8080`.
 
@@ -49,7 +49,7 @@ java -jar growmate.jar
 
 ## REST API
 
-The Growmate application provides a RESTful API for interacting with sensors and actuators.
+The Cultivator application provides a RESTful API for interacting with sensors and actuators.
 
 ### Sensors
 
@@ -83,7 +83,7 @@ Disable Actuator
 <hr />
 
 ## Customization
-You can customize the behavior of the GrowMate application by modifying the rules defined in the rules directory. These rules dictate how the sensor data is evaluated and what actions are triggered on the actuators. Feel free to adapt the rules to suit your specific use case.
+You can customize the behavior of the Cultivator application by modifying the rules defined in the rules directory. These rules dictate how the sensor data is evaluated and what actions are triggered on the actuators. Feel free to adapt the rules to suit your specific use case.
 
 <hr />
 
