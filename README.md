@@ -9,8 +9,6 @@ Cultivator is a smart gardening system that enables monitoring and control of va
 - Rule-based engine for evaluating sensor data and triggering appropriate actions.
 - Integration with GPIO pins using the Pi4J library for Raspberry Pi.
 
-<hr />
-
 ## Getting Started
 
 These instructions will guide you on how to set up and run the Cultivator project on your Raspberry Pi.
@@ -45,8 +43,6 @@ java -jar cultivator.jar
 
 4. Monitor the logs to observe sensor readings and rule evaluations.
 
-<hr />
-
 ## REST API
 
 The Cultivator application provides a RESTful API for interacting with sensors and actuators.
@@ -80,17 +76,11 @@ Disable Actuator
 - Response:
   - Status Code: 200 (OK)
 
-<hr />
-
 ## Customization
 You can customize the behavior of the Cultivator application by modifying the rules defined in the rules directory. These rules dictate how the sensor data is evaluated and what actions are triggered on the actuators. Feel free to adapt the rules to suit your specific use case.
 
-<hr />
-
 ## Contributing
 Contributions are welcome! If you find any issues or would like to suggest enhancements, please open an issue or submit a pull request.
-
-<hr />
 
 ### License
 
