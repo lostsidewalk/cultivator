@@ -106,4 +106,9 @@ public class Actuator {
     public static Actuator from(String name, GpioPinDigitalOutput outputPin, Long timeout) {
         return new Actuator(name, outputPin, timeout);
     }
+
+    @Override
+    public String toString() {
+        return String.format("[name=%s,timeout=%d]", name, timeout);
+    }
 }
