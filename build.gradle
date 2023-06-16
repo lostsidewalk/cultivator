@@ -127,3 +127,11 @@ javadoc {
         options.addBooleanOption('html5', true)
     }
 }
+
+jar {
+    enabled = true
+}
+
+bootJar {
+    classifier = 'application'
+}
