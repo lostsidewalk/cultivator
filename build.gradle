@@ -1,13 +1,20 @@
 plugins {
     id "org.springframework.boot" version "2.0.1.RELEASE"
+    id "maven-publish"
 }
 
 apply plugin: 'java'
+apply plugin: 'signing'
+
+group = 'com.lostsidewlk.cultivator'
+version = '0.3-dev'
 
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(17)
     }
+    withJavadocJar()
+    withSourcesJar()
 }
 
 repositories {
@@ -58,4 +65,65 @@ springBoot {
 
 test {
     useJUnitPlatform()
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            artifactId = 'cultivator'
+            from components.java
+            versionMapping {
+                usage('java-api') {
+                    fromResolutionOf('runtimeClasspath')
+                }
+                usage('java-runtime') {
+                    fromResolutionResult()
+                }
+            }
+            pom {
+                name = 'cultivator'
+                description = 'This module contains the Cultivator smart gardening framework backend.'
+                url = 'https://www.lostsidewalk.com/dev/cultivator'
+                licenses {
+                    license {
+                        name = 'The MIT License'
+                        url = 'https://opensource.org/license/mit/'
+                    }
+                }
+                developers {
+                    developer {
+                        id = 'elderscrollsjesus'
+                        name = 'Michael Harris'
+                        email = 'meh@lostsidewalk.com'
+                    }
+                }
+                scm {
+                    connection = 'scm:git:https://github.com/lostsidewalk/cultivator.git'
+                    developerConnection = 'scm:git:https://github.com/lostsidewalk/cultivator.git'
+                    url = 'https://www.lostsidewalk.com/dev/cultivator'
+                }
+            }
+        }
+    }
+    repositories {
+        maven {
+            def releasesRepoUrl = 'https://s01.oss.sonatype.org/content/repositories/releases'
+            def snapshotsRepoUrl = 'https://s01.oss.sonatype.org/content/repositories/snapshots'
+            url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+            credentials {
+                username = ossrhUsername
+                password = ossrhPassword
+            }
+        }
+    }
+}
+
+signing {
+    sign publishing.publications.mavenJava
+}
+
+javadoc {
+    if(JavaVersion.current().isJava9Compatible()) {
+        options.addBooleanOption('html5', true)
+    }
 }
