@@ -3,13 +3,13 @@ package com.lostsidewalk.cultivator.api;
 import com.lostsidewalk.cultivator.MonitorService.ActuatorNotFoundException;
 import com.lostsidewalk.cultivator.MonitorService.SensorNotFoundException;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 class ApiExceptionHandlerTest {
 
@@ -22,7 +22,7 @@ class ApiExceptionHandlerTest {
         WebRequest webRequest = new ServletWebRequest(request);
         ResponseEntity<?> responseEntity = exceptionHandler.handleActuatorNotFoundException(exception, webRequest);
 
-        assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
+        assertEquals(NOT_FOUND, responseEntity.getStatusCode());
     }
 
     @Test
@@ -32,6 +32,6 @@ class ApiExceptionHandlerTest {
         WebRequest webRequest = new ServletWebRequest(request);
         ResponseEntity<?> responseEntity = exceptionHandler.handleActuatorNotFoundException(exception, webRequest);
 
-        assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
+        assertEquals(NOT_FOUND, responseEntity.getStatusCode());
     }
 }

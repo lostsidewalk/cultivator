@@ -260,7 +260,7 @@ public class MonitorService {
      */
     public Boolean getActuatorState(String name) throws ActuatorNotFoundException {
         if (actuators.containsKey(name)) {
-            actuators.get(name).getState();
+            return actuators.get(name).getState();
         }
         throw new ActuatorNotFoundException(name);
     }
