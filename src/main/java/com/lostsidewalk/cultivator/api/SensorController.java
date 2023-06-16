@@ -1,6 +1,7 @@
 package com.lostsidewalk.cultivator.api;
 
 import com.lostsidewalk.cultivator.MonitorService;
+import com.lostsidewalk.cultivator.MonitorService.SensorNotFoundException;
 import com.lostsidewalk.cultivator.SensorDefinition;
 import com.lostsidewalk.cultivator.app.CultivatorConfigProperties;
 import lombok.extern.slf4j.Slf4j;
@@ -11,8 +12,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Map;
 
-import static org.springframework.http.ResponseEntity.notFound;
 import static org.springframework.http.ResponseEntity.ok;
 
 /**
@@ -28,10 +29,10 @@ import static org.springframework.http.ResponseEntity.ok;
 public class SensorController {
 
     @Autowired
-    private CultivatorConfigProperties configProperties;
+    CultivatorConfigProperties configProperties;
 
     @Autowired
-    private MonitorService monitorService;
+    MonitorService monitorService;
 
     /**
      * Retrieves the list of sensor definitions.
@@ -40,8 +41,16 @@ public class SensorController {
      */
     @GetMapping("/sensors")
     public ResponseEntity<List<SensorDefinition>> getSensorDefinitions() {
+        log.info("Fetching sensor definitions");
         List<SensorDefinition> sensorDefinitions = configProperties.getSensorDefinitions();
         return ok(sensorDefinitions);
+    }
+
+    @GetMapping("/sensors/current")
+    public ResponseEntity<Map<String, ?>> getCurrentValues() {
+        log.info("Fetching sensor current values");
+        Map<String, Object> currentValues = monitorService.getSensorState();
+        return ok(currentValues);
     }
 
     /**
@@ -51,12 +60,9 @@ public class SensorController {
      * @return ResponseEntity containing the current value of the sensor
      */
     @GetMapping("/sensors/current/{name}")
-    public ResponseEntity<?> getCurrentValue(@PathVariable("name") String sensorName) {
+    public ResponseEntity<?> getCurrentValue(@PathVariable("name") String sensorName) throws SensorNotFoundException {
+        log.info("Fetching sensor current value, sensorName={}", sensorName);
         Object currentValue = monitorService.getSensorValue(sensorName);
-        if (currentValue != null) {
-            return ok(currentValue);
-        } else {
-            return notFound().build();
-        }
+        return ok(currentValue);
     }
 }

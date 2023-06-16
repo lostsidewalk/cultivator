@@ -1,9 +1,9 @@
 package com.lostsidewalk.cultivator;
 
-import com.lostsidewalk.cultivator.app.GpioAdapter;
 import com.lostsidewalk.cultivator.app.CultivatorConfigProperties;
 import com.lostsidewalk.cultivator.sensors.*;
-import com.pi4j.io.gpio.*;
+import com.pi4j.io.gpio.GpioPinDigitalInput;
+import com.pi4j.io.gpio.GpioPinDigitalOutput;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -113,7 +113,7 @@ public class MonitorService {
      *
      * @return the list of built sensors
      */
-    private List<Sensor<?>> buildSensors() {
+    List<Sensor<?>> buildSensors() {
         List<SensorDefinition> sensorDefinitions = configProperties.getSensorDefinitions();
         if (isNotEmpty(sensorDefinitions)) {
             List<Sensor<?>> sensors = newArrayListWithExpectedSize(size(sensorDefinitions));
@@ -168,17 +168,24 @@ public class MonitorService {
         return m;
     }
 
+    public static class SensorNotFoundException extends Exception {
+
+        public SensorNotFoundException(String message) {
+            super(message);
+        }
+    }
+
     /**
      * Returns the current value of any sensor given by name.
      *
      * @param name the name of the sensor to query
      * @return the current value of the named sensor
      */
-    public Object getSensorValue(String name) {
-        return sensors.stream().filter(s -> StringUtils.equals(s.getName(), name))
+    public Object getSensorValue(String name) throws SensorNotFoundException {
+        Sensor<?> sensor = sensors.stream().filter(s -> StringUtils.equals(s.getName(), name))
                 .findFirst()
-                .map(Sensor::currentValue)
-                .orElse(null);
+                .orElseThrow(() -> new SensorNotFoundException(name));
+        return sensor.currentValue();
     }
 
     /**
@@ -194,7 +201,12 @@ public class MonitorService {
             for (ActuatorDefinition actuatorDefinition : actuatorDefinitions) {
                 try {
                     GpioPinDigitalOutput outputPin = gpioAdapter.provisionDigitalOutputPin(getPinByAddress(actuatorDefinition.getPinAddress()), LOW);
-                    actuators.add(Actuator.from(actuatorDefinition.getName(), outputPin, actuatorDefinition.getTimeout()));
+                    actuators.add(Actuator.from(
+                            actuatorDefinition.getName(),
+                            outputPin,
+                            actuatorDefinition.getTimeout(),
+                            actuatorDefinition.getInitialState()
+                    ) );
                 } catch (Exception e) {
                     log.error("Unable to provision digital output pin due to: {}", e.getMessage());
                 }
@@ -226,5 +238,30 @@ public class MonitorService {
         if (actuator != null) {
             actuator.setState(false);
         }
+    }
+
+    public Map<String, Boolean> getActuatorStates() {
+        return actuators.entrySet().stream()
+                .collect(toMap(Map.Entry::getKey, v -> v.getValue().getState()));
+    }
+
+    public static class ActuatorNotFoundException extends Exception {
+
+        public ActuatorNotFoundException(String message) {
+            super(message);
+        }
+    }
+
+    /**
+     * Returns the current state of any actuator given by name.
+     *
+     * @param name the name of the actuator to query
+     * @return the current state of the named actuator
+     */
+    public Boolean getActuatorState(String name) throws ActuatorNotFoundException {
+        if (actuators.containsKey(name)) {
+            actuators.get(name).getState();
+        }
+        throw new ActuatorNotFoundException(name);
     }
 }

@@ -1,5 +1,6 @@
 package com.lostsidewalk.cultivator.app;
 
+import com.lostsidewalk.cultivator.GpioAdapter;
 import com.pi4j.io.gpio.GpioFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

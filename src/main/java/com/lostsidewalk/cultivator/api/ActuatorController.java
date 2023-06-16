@@ -2,7 +2,9 @@ package com.lostsidewalk.cultivator.api;
 
 import com.lostsidewalk.cultivator.ActuatorDefinition;
 import com.lostsidewalk.cultivator.MonitorService;
+import com.lostsidewalk.cultivator.MonitorService.ActuatorNotFoundException;
 import com.lostsidewalk.cultivator.app.CultivatorConfigProperties;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,6 +13,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Map;
 
 import static org.springframework.http.ResponseEntity.ok;
 
@@ -22,6 +25,7 @@ import static org.springframework.http.ResponseEntity.ok;
  *
  * SPDX-License-Identifier: MIT
  */
+@Slf4j
 @RestController
 public class ActuatorController {
 
@@ -38,8 +42,29 @@ public class ActuatorController {
      */
     @GetMapping("/actuators")
     public ResponseEntity<List<ActuatorDefinition>> getActuatorDefinitions() {
+        log.info("Fetching actuator definitions");
         List<ActuatorDefinition> actuatorDefinitions = configProperties.getActuatorDefinitions();
         return ok(actuatorDefinitions);
+    }
+
+    @GetMapping("/actuators/current")
+    public ResponseEntity<Map<String, ?>> getCurrentStates() {
+        log.info("Fetching actuator current states");
+        Map<String, Boolean> currentStates = monitorService.getActuatorStates();
+        return ok(currentStates);
+    }
+
+    /**
+     * Retrieves the current state of the specified actuator.
+     *
+     * @param actuatorName the name of the actuator
+     * @return ResponseEntity containing the current state of the actuator
+     */
+    @GetMapping("/actuators/current/{name}")
+    public ResponseEntity<?> getCurrentState(@PathVariable("name") String actuatorName) throws ActuatorNotFoundException {
+        log.info("Fetching actuator current state, name={}", actuatorName);
+        Boolean currentState = monitorService.getActuatorState(actuatorName);
+        return ok(currentState);
     }
 
     /**
@@ -50,6 +75,7 @@ public class ActuatorController {
      */
     @PutMapping("/actuators/{name}/enable")
     public ResponseEntity<?> enableActuator(@PathVariable String name) {
+        log.info("Enabling actuator, name={}", name);
         monitorService.enableActuator(name);
         return ok().build();
     }
@@ -62,6 +88,7 @@ public class ActuatorController {
      */
     @PutMapping("/actuators/{name}/disable")
     public ResponseEntity<?> disableActuator(@PathVariable String name) {
+        log.info("Disabling actuator, name={}", name);
         monitorService.disableActuator(name);
         return ok().build();
     }

@@ -1,4 +1,4 @@
-package com.lostsidewalk.cultivator.app;
+package com.lostsidewalk.cultivator;
 
 import com.pi4j.io.gpio.*;
 
@@ -6,11 +6,11 @@ public class GpioAdapter {
 
     private final GpioController gpioController;
 
-    GpioAdapter(GpioController gpioController) {
+    public GpioAdapter(GpioController gpioController) {
         this.gpioController = gpioController;
     }
 
-    GpioAdapter() {
+    public GpioAdapter() {
         this.gpioController = null;
     }
 

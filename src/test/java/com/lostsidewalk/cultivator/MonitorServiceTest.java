@@ -1,6 +1,5 @@
 package com.lostsidewalk.cultivator;
 
-import com.lostsidewalk.cultivator.app.GpioAdapter;
 import com.lostsidewalk.cultivator.app.CultivatorConfigProperties;
 import com.lostsidewalk.cultivator.sensors.*;
 import com.pi4j.io.gpio.*;
@@ -9,9 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -32,6 +29,9 @@ class MonitorServiceTest {
     private CultivatorConfigProperties configProperties;
 
     @Mock
+    private RulesEngine rulesEngine;
+
+    @Mock
     private GpioAdapter gpioAdapter;
 
     @InjectMocks
@@ -40,7 +40,10 @@ class MonitorServiceTest {
     @BeforeEach
     void setUp() {
         openMocks(this);
-        monitorService.sensors = new ArrayList<>();
+        monitorService = new MonitorService();
+        monitorService.configProperties = configProperties;
+        monitorService.rulesEngine = rulesEngine;
+        monitorService.gpioAdapter = gpioAdapter;
     }
 
     @Test
@@ -68,19 +71,58 @@ class MonitorServiceTest {
     }
 
     @Test
+    void testBuildSensors() {
+        SensorDefinition sensorDefinition = new SensorDefinition();
+        sensorDefinition.setName("TestSensor");
+        sensorDefinition.setType("temp");
+        sensorDefinition.setPinAddress(1);
+        sensorDefinition.setTimeout(1000L);
+        List<SensorDefinition> sensorDefinitions = List.of(sensorDefinition);
+        when(configProperties.getSensorDefinitions()).thenReturn(sensorDefinitions);
+
+        List<Sensor<?>> sensors = monitorService.buildSensors();
+
+        assertEquals(1, sensors.size());
+        assertEquals("TestSensor", sensors.get(0).getName());
+    }
+
+    @Test
+    void testCreateSensor() {
+        GpioPinDigitalInput inputPin = mock(GpioPinDigitalInput.class);
+        when(gpioAdapter.provisionDigitalInputPin(any(Pin.class), any(PinPullResistance.class))).thenReturn(inputPin);
+
+        Sensor<?> sensor = monitorService.createSensor(TEMPERATURE, "TestSensor", 1, 1000L);
+
+        assertNotNull(sensor);
+        assertEquals("TestSensor", sensor.getName());
+    }
+
+    @Test
     void testGetSensorState() {
-        TemperatureSensor temperatureSensor = mock(TemperatureSensor.class);
-        when(temperatureSensor.getName()).thenReturn("Temperature Sensor");
-        when(temperatureSensor.currentValue()).thenReturn(new BigDecimal(25));
+        @SuppressWarnings("unchecked") Sensor<Double> sensor = mock(Sensor.class);
+        when(sensor.getName()).thenReturn("TestSensor");
+        when(sensor.currentValue()).thenReturn(25.0);
 
-        monitorService.sensors.add(temperatureSensor);
-
-        Map<String, Object> expectedSensorState = new HashMap<>();
-        expectedSensorState.put("Temperature Sensor", new BigDecimal(25));
+        monitorService.sensors = List.of(sensor);
 
         Map<String, Object> sensorState = monitorService.getSensorState();
 
-        assertEquals(expectedSensorState, sensorState);
+        assertEquals(1, sensorState.size());
+        assertTrue(sensorState.containsKey("TestSensor"));
+        assertEquals(25.0, sensorState.get("TestSensor"));
+    }
+
+    @Test
+    void testGetSensorValue() throws MonitorService.SensorNotFoundException {
+        @SuppressWarnings("unchecked") Sensor<Double> sensor = mock(Sensor.class);
+        when(sensor.getName()).thenReturn("TestSensor");
+        when(sensor.currentValue()).thenReturn(25.0);
+
+        monitorService.sensors = List.of(sensor);
+
+        Object value = monitorService.getSensorValue("TestSensor");
+
+        assertEquals(25.0, value);
     }
 
     @Test

@@ -17,29 +17,46 @@ public class ActuatorDefinition implements Serializable {
     private String name;
     private Integer pinAddress;
     private Long timeout;
+    private boolean initialState;
 
     /**
      * Creates an ActuatorDefinition object with the specified name and pin address.
      *
-     * @param name        the name of the actuator
-     * @param pinAddress  the pin address of the actuator
-     * @param timeout     the number of MS to wait for the actuator write to complete
+     * @param name         the name of the actuator
+     * @param pinAddress   the pin address of the actuator
+     * @param timeout      the number of MS to wait for the actuator write to complete
+     * @param initialState the initial state of the actuator
      */
-    public ActuatorDefinition(String name, Integer pinAddress, Long timeout) {
+    public ActuatorDefinition(String name, Integer pinAddress, Long timeout, boolean initialState) {
         this.name = name;
         this.pinAddress = pinAddress;
         this.timeout = timeout;
+        this.initialState = initialState;
     }
 
     /**
      * Creates an ActuatorDefinition object with the specified name and pin address.
      *
-     * @param name        the name of the actuator
-     * @param pinAddress  the pin address of the actuator
+     * @param name         the name of the actuator
+     * @param pinAddress   the pin address of the actuator
+     * @param initialState the initial state of the actuator
+     */
+    public ActuatorDefinition(String name, Integer pinAddress, boolean initialState) {
+        this.name = name;
+        this.pinAddress = pinAddress;
+        this.initialState = initialState;
+    }
+
+    /**
+     * Creates an ActuatorDefinition object with the specified name and pin address with an initial state of off (false).
+     *
+     * @param name         the name of the actuator
+     * @param pinAddress   the pin address of the actuator
      */
     public ActuatorDefinition(String name, Integer pinAddress) {
         this.name = name;
         this.pinAddress = pinAddress;
+        this.initialState = false;
     }
 
     /**
@@ -99,6 +116,24 @@ public class ActuatorDefinition implements Serializable {
      */
     public void setTimeout(Long timeout) {
         this.timeout = timeout;
+    }
+
+    /**
+     * Returns the initial state of the actuator.
+     *
+     * @return true if the actuator is initially considered 'active', false otherwise
+     */
+    public boolean getInitialState() {
+        return initialState;
+    }
+
+    /**
+     * Sets the initial state of the actuator.
+     *
+     * @param initialState true if the actuator is initially considered 'active', false otherwise
+     */
+    public void setInitialState(boolean initialState) {
+        this.initialState = initialState;
     }
 
     @Override

@@ -56,6 +56,10 @@ abstract class BaseSensorImplementation<T> implements Sensor<T> {
      */
     @Override
     public T currentValue() {
+        if (inputPin == null) {
+            log.trace("Skipping sensor check due to missing input pin for sensor={}", name);
+            return null;
+        }
         try {
             // Implement the logic to read the value from the sensor using Pi4J
             // For example, assuming the pin is connected to an analog-to-digital converter (ADC) that reads the value
