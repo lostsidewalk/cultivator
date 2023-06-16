@@ -5,3 +5,4 @@
 build
 .idea
 gradle.properties
+secret-keys.gpg
