@@ -13,6 +13,10 @@ Cultivator is a smart gardening system that enables monitoring and control of va
 
 These instructions will guide you on how to set up and run the Cultivator project on your Raspberry Pi.
 
+This module comprises the back-end only, which must run on the Raspberry Pi device.  
+
+The front-end, which can run from any network-connected device, is located here: https://github.com/lostsidewalk/cultivator-client.
+
 ### Prerequisites
 
 - Raspberry Pi board
