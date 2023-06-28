@@ -19,7 +19,11 @@ The front-end, which can run from any network-connected device, is located here:
 
 ### Prerequisites
 
-- Raspberry Pi board
+- Raspberry Pi board 
+  - [Raspberry Pi 4 Computer Model 4 8 GB SBC](https://www.amazon.com/dp/B0899VXM8F?psc=1&ref=ppx_yo2ov_dt_b_product_details)
+  - [Flirc Raspberry Pi 4 Case](https://www.amazon.com/dp/B07WG4DW52?psc=1&ref=ppx_yo2ov_dt_b_product_details)
+  - [CanaKit 3.5A Raspberry Pi 4 Power Supply (USB-C)](https://www.amazon.com/dp/B07TYQRXTK?psc=1&ref=ppx_yo2ov_dt_b_product_details)
+  - SD card w/adequate storage 
 - Java Development Kit (JDK) 8 or later installed on the Raspberry Pi
 - Pi4J library installed on the Raspberry Pi
 - Other dependencies as specified in the project
