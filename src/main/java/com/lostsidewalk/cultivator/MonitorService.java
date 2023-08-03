@@ -1,5 +1,6 @@
 package com.lostsidewalk.cultivator;
 
+import com.lostsidewalk.cultivator.Alert.AlertState;
 import com.lostsidewalk.cultivator.app.CultivatorConfigProperties;
 import com.lostsidewalk.cultivator.sensors.*;
 import com.pi4j.io.gpio.GpioPinDigitalInput;
@@ -90,6 +91,7 @@ public class MonitorService {
 
     List<Sensor<?>> sensors;
     Map<String, Actuator> actuators;
+    Map<String, Alert> alerts;
 
     /**
      * Initializes the MonitorService after construction.
@@ -102,10 +104,13 @@ public class MonitorService {
         actuators = buildActuators(gpioAdapter);
         log.info("Cultivator actuators={}", actuators);
 
+        alerts = buildAlerts();
+        log.info("Cultivator alerts={}", alerts);
+
         log.info("Starting Cultivator reactor...");
         Flux.interval(ofSeconds(2L))
                 .map(tick -> getSensorState())
-                .subscribe(sensorState -> rulesEngine.evaluateRules(sensorState, actuators));
+                .subscribe(sensorState -> rulesEngine.evaluateRules(sensorState, actuators, alerts));
     }
 
     /**
@@ -246,7 +251,6 @@ public class MonitorService {
     }
 
     public static class ActuatorNotFoundException extends Exception {
-
         public ActuatorNotFoundException(String message) {
             super(message);
         }
@@ -263,5 +267,40 @@ public class MonitorService {
             return actuators.get(name).getState();
         }
         throw new ActuatorNotFoundException(name);
+    }
+
+    /**
+     * Builds the map of alerts based on the configuration properties.
+     *
+     * @return the map of alerts with their names as keys
+     */
+    Map<String, Alert> buildAlerts() {
+        List<AlertDefinition> alertDefinitions = configProperties.getAlertDefinitions();
+        if (isNotEmpty(alertDefinitions)) {
+            List<Alert> alerts = newArrayListWithExpectedSize(size(alertDefinitions));
+            for (AlertDefinition alertDefinition : alertDefinitions) {
+                alerts.add(Alert.from(alertDefinition.getName()) );
+            }
+            return alerts.stream().collect(toMap(Alert::getName, a -> a));
+        }
+        return emptyMap();
+    }
+
+    public Map<String, AlertState> getAlertStates() {
+        return alerts.entrySet().stream()
+                .collect(toMap(Map.Entry::getKey, v -> v.getValue().getAlertState()));
+    }
+
+    public static class AlertNotFoundException extends Exception {
+        public AlertNotFoundException(String message) {
+            super(message);
+        }
+    }
+
+    public AlertState getAlertState(String name) throws AlertNotFoundException {
+        if (alerts.containsKey(name)) {
+            return alerts.get(name).getAlertState();
+        }
+        throw new AlertNotFoundException(name);
     }
 }

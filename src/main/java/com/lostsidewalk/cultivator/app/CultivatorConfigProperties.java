@@ -1,6 +1,7 @@
 package com.lostsidewalk.cultivator.app;
 
 import com.lostsidewalk.cultivator.ActuatorDefinition;
+import com.lostsidewalk.cultivator.AlertDefinition;
 import com.lostsidewalk.cultivator.SensorDefinition;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
@@ -21,6 +22,7 @@ public class CultivatorConfigProperties {
 
     private List<SensorDefinition> sensorDefinitions;
     private List<ActuatorDefinition> actuatorDefinitions;
+    private List<AlertDefinition> alertDefinitions;
 
     /**
      * Get the list of sensor definitions.
@@ -56,5 +58,23 @@ public class CultivatorConfigProperties {
      */
     public void setActuatorDefinitions(List<ActuatorDefinition> actuatorDefinitions) {
         this.actuatorDefinitions = actuatorDefinitions;
+    }
+
+    /**
+     * Get the list of alert definitions.
+     *
+     * @return the list of alert definitions
+     */
+    public List<AlertDefinition> getAlertDefinitions() {
+        return alertDefinitions;
+    }
+
+    /**
+     * Set the list of alert definitions.
+     *
+     * @param alertDefinitions the list of alert definitions
+     */
+    public void setAlertDefinitions(List<AlertDefinition> alertDefinitions) {
+        this.alertDefinitions = alertDefinitions;
     }
 }

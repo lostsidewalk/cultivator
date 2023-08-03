@@ -26,14 +26,16 @@ public class RulesEngine {
      *
      * @param sensorState the map of sensor names to their current values
      * @param actuators   the map of actuators with their names as keys
+     * @param alerts      the map of alerts with the names as keys
      */
-    public void evaluateRules(Map<String, Object> sensorState, Map<String, Actuator> actuators) {
+    public void evaluateRules(Map<String, Object> sensorState, Map<String, Actuator> actuators, Map<String, Alert> alerts) {
         try {
             KieSession kSession = kieContainer.newKieSession();
 
-            // Insert sensor and actuator objects into the rule engine session
+            // Insert sensor, actuator, and alert objects into the rule engine session
             kSession.insert(sensorState);
             kSession.insert(actuators);
+            kSession.insert(alerts);
 
             // Fire the rules and trigger the associated actions
             kSession.fireAllRules();

@@ -139,4 +139,18 @@ class MonitorServiceTest {
         assertEquals(1, actuators.size());
         assertNotNull(actuators.get("Actuator 1"));
     }
+
+    @Test
+    void testPostConstruct_BuildAlerts() {
+        List<AlertDefinition> alertDefinitions = new ArrayList<>();
+        alertDefinitions.add(new AlertDefinition("Alert 1"));
+
+        when(configProperties.getAlertDefinitions()).thenReturn(alertDefinitions);
+
+        monitorService.postConstruct();
+
+        Map<String, Alert> alerts = monitorService.buildAlerts();
+        assertEquals(1, alerts.size());
+        assertNotNull(alerts.get("Alert 1"));
+    }
 }

@@ -44,14 +44,17 @@ public class RulesEngineTest {
         sensorState.put("testSensor", 1);
         Map<String, Actuator> actuators = new HashMap<>();
         actuators.put("testActuator", mock(Actuator.class));
+        Map<String, Alert> alerts = new HashMap<>();
+        alerts.put("testAlert", mock(Alert.class));
 
         // Call the method under test
-        rulesEngine.evaluateRules(sensorState, actuators);
+        rulesEngine.evaluateRules(sensorState, actuators, alerts);
 
         // Verify that the session was created and used
         verify(kieContainer).newKieSession();
         verify(kieSession).insert(sensorState);
         verify(kieSession).insert(actuators);
+        verify(kieSession).insert(alerts);
         verify(kieSession).fireAllRules();
         verify(kieSession).dispose();
     }
